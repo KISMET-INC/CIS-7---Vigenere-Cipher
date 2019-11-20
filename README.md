@@ -1,3 +1,3 @@
-# CIS-7---Vigenere-Cipher
+# Vigenere-Cipher- Readme
 
 Vigenere Cipher readme
