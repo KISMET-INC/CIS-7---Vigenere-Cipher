@@ -19,9 +19,7 @@ Only letters and spaces can be used (upper or lowercase)The program automaticall
 # Key Inputs
 Key inputs must be one single line (Does not allow spaces, numbers or symbols)
 
-# Help
+# Maintenance and Contributers
 If you need help with this project, or have any questions about it, Kristen can be reached at kmoreland909@gmail.com
 
-# Maintenance and Contributers
-Kr!sten
 
