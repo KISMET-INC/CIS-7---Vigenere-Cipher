@@ -1,3 +1,6 @@
+# Changes in Patch 1
+Although the Vigenere Square is still available for viewing within the program, the encoding function no longer uses this 2D array to encode messages, instead it uses the addition method similar to the way the decoding uses the subtraction method.
+
 # Vigenere-Cipher- Readme
 
 Designed in a sort of game format, this program allows the user to encrypt and decrypt codes using the standard Vigenere Square Ciper.
