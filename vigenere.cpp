@@ -18,7 +18,7 @@ HANDLE  hConsole; int k = 7;
 
 void setColor(int);
 
-void addLetterToVigenereTable(char &);
+void nextLetterInAlphabet(char &);
 
 void createVigenereSquare(char array[ARRAYSIZE][ARRAYSIZE], int);
 
@@ -35,6 +35,8 @@ string stringToAllUppercase(string);
 void indexViewer();
 
 string generateEncodedCipher(string, string, char array[ARRAYSIZE][ARRAYSIZE]);
+
+string generateEncodedCipher2(string, string);
 
 string decryptCipher(string, string, char array[ARRAYSIZE][ARRAYSIZE]);
 
@@ -63,6 +65,7 @@ int main()
 	bool validText; //variable to determine if text is a valid entry
 	char menuChoice; //variable to hold menu choice
 	char vigenereArray[ARRAYSIZE][ARRAYSIZE]; //array to hold vigenere square data
+
 	
 
 
@@ -140,7 +143,7 @@ int main()
 			matchingKey = createMatchingKey(key, readableText);
 
 			//Generate Cipher From Input
-			cipher = generateEncodedCipher(readableText, matchingKey, vigenereArray);
+			cipher = generateEncodedCipher2(readableText, matchingKey);
 
 			//Print Results
 			results(readableText, key, matchingKey, cipher,'E');
@@ -270,7 +273,6 @@ int main()
 // setColor()                                                   //
 // Fast way to change text color                                //
 //****************************************************************
-
 void setColor(int color)
 {
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -283,8 +285,7 @@ void setColor(int color)
 // Produces the next letter in the alphabet every time it is    //
 // called, after Z it loops back around again to produce A      //
 //****************************************************************
-
-void addLetterToVigenereTable(char& total) {
+void nextLetterInAlphabet(char& total) {
 
 	if (total > 89)
 	{
@@ -305,10 +306,9 @@ void addLetterToVigenereTable(char& total) {
 // addLettertoVignereTable function and fillng all the			//
 // indexes with the next letter.                                //
 //****************************************************************
-
 void createVigenereSquare(char array[ARRAYSIZE][ARRAYSIZE], int ARRAYSIZE) {
 
-	//Letters start at ascii 64 which is A (-1) 
+	//Letters start at ascii 64 which is A -1
 	static char total = 64;
 
 	for (int i = 0; i < ARRAYSIZE; i++) //rows
@@ -322,7 +322,7 @@ void createVigenereSquare(char array[ARRAYSIZE][ARRAYSIZE], int ARRAYSIZE) {
 
 			//Value of the first column and begins to add successive letters to 
 			//the table till it gets to the end of the row. Then starts over.
-			addLetterToVigenereTable(total);
+			nextLetterInAlphabet(total);
 			array[i][j] = total;
 
 		}
@@ -334,7 +334,6 @@ void createVigenereSquare(char array[ARRAYSIZE][ARRAYSIZE], int ARRAYSIZE) {
 // printArray()                                                 //
 // Cycles through and prints out the Vigenere Square Array      //
 //****************************************************************
-
 void printArray(char array[ARRAYSIZE][ARRAYSIZE], int ARRAYSIZE) {
 	
 	//Cycles through array and prints values at each index
@@ -367,7 +366,6 @@ void printArray(char array[ARRAYSIZE][ARRAYSIZE], int ARRAYSIZE) {
 // when it gets to the last letter. Produces the letters as     //
 // strings so they can be appended to a full string later.      //
 //****************************************************************
-
 string addNextLetter_Key(string key, string reset) {
 	static int i;
 	string stringLetter;
@@ -404,7 +402,6 @@ string addNextLetter_Key(string key, string reset) {
 // addNextLetter_key it keeps putting letters down until it     //
 // reaches the end of the user input text.                      //
 //****************************************************************
-
 string createMatchingKey(string key, string text) {
 
 	int startChar = key[0];
@@ -440,7 +437,6 @@ string createMatchingKey(string key, string text) {
 // Takes in a character and converts it to a string and retuns  //
 // the string.                                                  //
 //****************************************************************
-
 string convertCharToString(char character) {
 
 	//Convert character to string
@@ -455,7 +451,6 @@ string convertCharToString(char character) {
 // Takes in a string and converts it into all uppercase then    //
 // returns a new string.                                        //
 //****************************************************************
-
 string stringToAllUppercase(string String) {
 	int i = 0;
 	char c;
@@ -483,7 +478,6 @@ string stringToAllUppercase(string String) {
 // Prints out a row of numbers to represent the index for		//
 // the Vigenere Square                                          //
 //****************************************************************
-
 void indexViewer() {
 
 	setColor(12);
@@ -497,13 +491,13 @@ void indexViewer() {
 
 }
 
+//ORIGINAL FUNCTION USING VIGENERE SQUARE
 //****************************************************************
 // generateEncodedCipher()                                      //
 // Takes in he user input text, the long key and the Vigenere   //
 // Square array. Searches the Vigenere Square and produces a    //
 // string with the encoded message.								//
 //****************************************************************
-
 string generateEncodedCipher(string text, string longKey, char array[ARRAYSIZE][ARRAYSIZE]) {
 	int length = text.length();
 	//the new encrypted code
@@ -513,6 +507,7 @@ string generateEncodedCipher(string text, string longKey, char array[ARRAYSIZE][
 	//Generates index locations (for Vigenere Square) of corresponding letters in 
 	//corresponding locations of the user input key and the matching length key.
 	for (int i = 0; i < length; i++) {
+
 		int column = text[i] - 65;
 		int row = longKey[i] - 65;
 
@@ -537,11 +532,54 @@ string generateEncodedCipher(string text, string longKey, char array[ARRAYSIZE][
 }
 
 //****************************************************************
+// generateEncodedCipher2()                                     //
+// Easier implementation without Vignere Table					//
+// Takes in the user input text, and the long key, finds the	//
+//	0-25 value of these then the sum mod 26 is the number of the//
+//	encoded letter												//
+//****************************************************************
+string generateEncodedCipher2(string text, string longKey) {
+	int length = text.length();
+	//the new encrypted code
+	string cipher;
+
+
+	//Generates index locations (for Vigenere Square) of corresponding letters in 
+	//corresponding locations of the user input key and the matching length key.
+	for (int i = 0; i < length; i++) {
+
+		int column = text[i];
+		int row = longKey[i];
+		
+		//If in the text there is a space, add a space to the cipher
+		if (text[i] == 32) {
+			cipher.append(" ");
+		}
+		else
+		{
+			
+			//Using the ascii values above this adds them together to find the appropriate letter in the ascii table
+			// mod 6 to loop the characters in intervals of 26 to represent alphabet letters
+			// and + 65 to find the ascii value.
+
+			char columnRow = ((column + row) % 26)+65;
+			//cout << columnRow << endl;
+			string tempCharHolder (1, columnRow);
+
+			//Add this found character to the cipher string
+			cipher.append(tempCharHolder);
+
+		}
+
+	}
+
+	return cipher;
+}
+//****************************************************************
 // decryptCipher()                                              //
 // Takes in the encrypted text, the long key and the Vigenere   //
 // Square to decrypt the code. Uses the subtraction method.     //
 //****************************************************************
-
 string decryptCipher(string encrypted, string longKey, char array[ARRAYSIZE][ARRAYSIZE]) {
 	int length = encrypted.length();
 
@@ -600,8 +638,7 @@ string decryptCipher(string encrypted, string longKey, char array[ARRAYSIZE][ARR
 // dataValidation()                                             //
 // Checks it the string input is only alphabet characters and   //
 // returns a bool of true or false.								//
-//****************************************************************
-
+//***************************************************************
 bool dataValidation(string& String, string type) {
 	//Edit string input and convert it to uppercase
 	String = stringToAllUppercase(String);
@@ -637,7 +674,6 @@ bool dataValidation(string& String, string type) {
 // Displays the header with the app welcome title and the       //
 // author                                                       //
 //****************************************************************
-
 void header() {
 	cout << DIVIDER << endl << endl;
 	cout << "\tWelcome to the VIGINERE CIPHER" << endl;
@@ -654,7 +690,6 @@ void header() {
 // menu()                                                       //
 // Displays a menu of choices                                   //
 //****************************************************************
-
 void menu() {
 	cout << DIVIDER << endl << endl;
 	setColor(8);
@@ -673,7 +708,6 @@ void menu() {
 // results()                                                    //
 // Displays the results of the encryption or decryption			//
 //****************************************************************
-
 void results(string plaintext, string key, string longkey, string cipher, char t) { 
 	
 	//char t = type of result to be produced
@@ -707,7 +741,6 @@ void results(string plaintext, string key, string longkey, string cipher, char t
 // Takes in a input character and immediately converts it to    //
 // uppercase                                                    //
 //****************************************************************
-
 void cin_ToUpperCase(char& input) {
 	cin >> input;
 	input = toupper(input);
